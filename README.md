@@ -160,3 +160,94 @@ try {
 em = DBUtil.getEntityManager();
 
 ```
+
+### 문제 3
+
+3-1 )
+
+```bash
+@NoArgsConstructor
+@AllArgsConstructor
+@RequiredArgsConstructor
+
+@Getter
+@Setter
+@ToString
+
+@SequenceGenerator(name = "team4_seq", sequenceName = "team4_seq_id",
+				   initialValue = 1, allocationSize = 50)
+@Entity
+public class Team4 {
+	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "team4_seq")
+	@Column(name = "team_id")
+	private long teamId;
+	
+	@NonNull
+	@Column(name="team_name", length = 20)
+	private String teamName;	
+	
+	@OneToMany(mappedBy = "teamId")
+	// "teamId" 가 가지는 의미는 무엇인가?
+	public List<Member4> members = new ArrayList<>();	
+}
+
+정답 : Member4에서 Team4에 join된 변수명, 자식의 참조키
+```
+
+3-2 )
+
+```bash
+@NoArgsConstructor
+@AllArgsConstructor
+@RequiredArgsConstructor 
+@Getter
+@Setter
+@ToString
+
+@SequenceGenerator(name = "member4_seq", sequenceName = "member4_seq_member_id", 
+				   allocationSize = 50, initialValue = 1)
+@Table(name = "ce_member") 
+@Entity
+public class Member4 {
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "member4_seq") 
+	@Column(name="member_id")
+	private long memberId;
+	
+	@NonNull
+	@Column(length = 20, nullable = false) 
+	private String name;
+
+	@NonNull
+	@ManyToOne(fetch = FetchType.LAZY) 
+	// 문제 : fetch = FetchType.LAZY를 사용하는 이유를 설명하시오.
+	@JoinColumn(name="team_id")
+	private Team4 teamId;
+	
+}
+
+정답 : 엔티티를 실제로 필요한 시점까지 DB에서 로딩을 하지 않고, 초기 로딩 시점의 성능을 개선하고 불필요한 데이터베이스 쿼리 실행을 방지할 수 있다. 또한 메모리 사용량을 줄일수 있다.
+```
+
+3-3)
+
+```bash
+public class Step04RunTest {
+	@Test
+	public void step03Test() {
+		EntityManager em = DBUtil.getEntityManager();
+		
+		Member4 m = em.find(Member4.class, 1L);
+		
+		System.out.println(m.getName());
+		System.out.println(m.getTeamId().getTeamName());
+		// 출력문이 실행되면서 select문이 실행되는 횟수는?
+		em.close();
+		em = null;
+	}
+}
+
+정답 : 2번
+```
