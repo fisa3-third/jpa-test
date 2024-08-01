@@ -94,3 +94,93 @@ Member4 loaded: Member B
 Team4 loaded: Team B
 ```
 
+### 문제
+
+- 위 코드는 [Member.java](http://Member.java) 코드이다. 밑에 있는 코드를  엔티티 중 한 명의 OJT 상태를 "완료"로 변경하세요 .
+- 변경된 정보를 데이터베이스에 반영하고, 다시 조회하여 변경된 OJT 상태를 출력하세요.
+
+```java
+package step04.onetomany;
+
+import javax.persistence.*;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+
+@NoArgsConstructor
+@AllArgsConstructor
+@RequiredArgsConstructor
+@Getter
+@Setter
+@ToString
+
+@Entity
+public class Member {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "member_id")
+    private Long id;
+
+    @NonNull
+    @Column(name = "name", length = 50)
+    private String name;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "team_id")
+    private Team team;
+
+    @NonNull
+    @Column(name = "ojt_status")
+    private String ojtStatus; // OJT 상태 (예: "진행 중", "완료")
+}
+
+```
+
+```java
+EntityManager em = DBUtil.getEntityManager();
+EntityTransaction tx = em.getTransaction();
+
+try {
+    tx.begin();
+    Member member = em.find(Member.class, 1L);
+    tx.commit();
+} catch (Exception e) {
+    tx.rollback();
+    e.printStackTrace();
+} finally {
+    em.close();
+}
+
+em = DBUtil.getEntityManager();
+
+```
+
+```java
+EntityManager em = DBUtil.getEntityManager();
+EntityTransaction tx = em.getTransaction();
+
+try {
+    tx.begin();
+    Member member = em.find(Member.class, 1L);
+   // member.setOjtStatus("완료");
+    tx.commit();
+} catch (Exception e) {
+    tx.rollback();
+    e.printStackTrace();
+} finally {
+    em.close();
+}
+
+// 변경된 정보 조회
+em = DBUtil.getEntityManager();
+//member = em.find(Member.class, 1L);
+//System.out.println("팀원 이름: " + member.getName() + ", 변경된 OJT 상태: " + member.getOjtStatus());
+//em.close();
+
+```
