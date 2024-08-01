@@ -1,6 +1,6 @@
 # JPA 기본 개념 test 만들어보기
 
-### 1. 다음 실행된 쿼리를 보고 FetchType의 종류를 맞춰보세요. (보기: Lazy, Eager)
+### 문제 1. 다음 실행된 쿼리를 보고 FetchType의 종류를 맞춰보세요. (보기: Lazy, Eager)
 
 1-1)
 
@@ -94,7 +94,7 @@ Member4 loaded: Member B
 Team4 loaded: Team B
 ```
 
-### 문제
+### 문제2 
 
 - 위 코드는 [Member.java](http://Member.java) 코드이다. 밑에 있는 코드를  엔티티 중 한 명의 OJT 상태를 "완료"로 변경하세요 .
 - 변경된 정보를 데이터베이스에 반영하고, 다시 조회하여 변경된 OJT 상태를 출력하세요.
@@ -158,29 +158,5 @@ try {
 }
 
 em = DBUtil.getEntityManager();
-
-```
-
-```java
-EntityManager em = DBUtil.getEntityManager();
-EntityTransaction tx = em.getTransaction();
-
-try {
-    tx.begin();
-    Member member = em.find(Member.class, 1L);
-   // member.setOjtStatus("완료");
-    tx.commit();
-} catch (Exception e) {
-    tx.rollback();
-    e.printStackTrace();
-} finally {
-    em.close();
-}
-
-// 변경된 정보 조회
-em = DBUtil.getEntityManager();
-//member = em.find(Member.class, 1L);
-//System.out.println("팀원 이름: " + member.getName() + ", 변경된 OJT 상태: " + member.getOjtStatus());
-//em.close();
 
 ```
